@@ -1,0 +1,51 @@
+Win32/FetchCommand version 0.01
+===============================
+
+NAME
+
+Win32::FetchCommand - Perl extension for the Win32 API SearchPath, and 
+filename extension association resolution.
+
+SYNOPSIS
+
+  use Win32::FetchCommand;
+
+  @Command  = FetchCommand ('.pl');
+
+  ($Exe, @CmdLine) = FetchCommand ('file.txt');
+
+  ($Exe, @CmdLine) = FetchCommand ('file.txt', 'print');
+
+DESCRIPTION
+
+This module is specifically for use with Win32::Process::Create.  That interface
+requires the full path name of an executable, which FetchCommand provides based
+on the filename 'extension'.
+
+It is not always obvious (to a program) which executable should be run to process
+a given file, so this module provides a registry lookup to get the associated
+executable.
+
+INSTALLATION
+
+To install this module type the following:
+
+   perl Makefile.PL
+   make
+   make test
+   make install
+
+DEPENDENCIES
+
+This module will only run on Microsoft Windows, and requires a C compiler, a
+linker, and a 'make' utility for installation.
+
+COPYRIGHT AND LICENCE
+
+Put the correct copyright and licence information here.
+
+Copyright (C) 2004 Clive Darke
+
+This library is free software; you can redistribute it and/or modify
+it under the same terms as Perl itself. 
+

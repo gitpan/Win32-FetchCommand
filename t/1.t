@@ -6,7 +6,6 @@
 use Config;
 
 use Test::More tests => 19;
-#use Test::More "no_plan";
 
 BEGIN { use_ok('Win32::FetchCommand') };
 
@@ -56,7 +55,6 @@ ok($Exe, 'check there is a program for print');
 ($Exe, @Cmd) = FetchCommand('thingy.pl', 'print');
 ok(@Cmd == 0, 'check number of elements(h)');
 is($Exe, undef, 'check there is no program for print');
-
 
 #use Win32::Process;
 

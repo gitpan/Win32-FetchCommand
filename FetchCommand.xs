@@ -97,11 +97,12 @@ FetchCommand(szName, ...)
       /* Some commands are quoted (Imbedded spaces in file names) */
       /* Some commands are not quoted                             */
       /* Some commands have both quoted and non-quoted strings!   */
-          
+         
       for (iArgs = 0; astr && *astr; iArgs++ )
       {
          char delim;
          char *tokend;
+         char *percent;
          int iLen;
 
          if (*astr == '"')
@@ -123,17 +124,38 @@ FetchCommand(szName, ...)
          /* with other command line arguments, but this is all we have */
 
          /* Environment variable or insertion string? */
-         if ( *astr == '%' )
+         percent = strchr (astr, '%');
+         
+         if ( percent )
          {
-            char *bstr = astr + 1;
+            char *bstr = percent + 1;
 
-            if (isdigit(*bstr) || *bstr == '*')
+            /* Check for %1, %l (lower 'ell'), %L, %* */
+            if (*bstr == '1' || *bstr == 'l' || *bstr == 'L' || *bstr == '*')
             { 
-               /* This assumes we don't have an insertion string > %9 without a %1 */
-
-               if (!bNameInserted && *bstr == '1')
+               if (!bNameInserted && *bstr != '*')
                {
-                  XPUSHs(sv_2mortal(newSVpvn (szName, strlen(szName))));
+                  char szWk[FILENAME_MAX+1] = {0};
+                  int wkLen = percent - astr;
+                  BOOL bQuoted = FALSE;
+
+                  if ( percent > astr && *(percent - 1) == '\"')
+                  {
+                    wkLen--;
+                    bQuoted = TRUE;
+                  }
+  
+                  strncpy (szWk, astr, wkLen);
+                  strcat (szWk, szName);
+                  bstr++;
+
+                  if (bQuoted && *bstr == '\"')
+                     bstr++;
+
+                  strcat (szWk, bstr);
+                  XPUSHs(sv_2mortal(newSVpvn (szWk, strlen(szWk))));
+  
+                  /* XPUSHs(sv_2mortal(newSVpvn (szName, strlen(szName)))); */
                   bNameInserted = TRUE;
                }
                else if ( *bstr == '*' )

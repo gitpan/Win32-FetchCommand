@@ -10,7 +10,7 @@ use AutoLoader qw(AUTOLOAD);
 our @ISA = qw(Exporter);
 our @EXPORT = qw( FetchCommand );
 
-our $VERSION = '0.01';
+our $VERSION = '0.02';
 
 require XSLoader;
 XSLoader::load('Win32::FetchCommand', $VERSION);
@@ -24,8 +24,7 @@ __END__
 
 =head1 NAME
 
-Win32::FetchCommand - Perl extension for the Win32 API SearchPath, and 
-filename extension association resolution.
+Win32::FetchCommand - Filename extension association resolution.
 
 =head1 SYNOPSIS
 
@@ -43,9 +42,9 @@ This module is specifically for use with Win32::Process::Create.  That interface
 requires the full path name of an executable, which FetchCommand provides based
 on the filename 'extension'.
 
-It is not always obvious (to a program) which executable should be run to process
-a given file, so this module provides a registry lookup to get the associated
-executable.
+It is not always obvious (to a program) which executable should be run to 
+process a given file, so this module provides a registry lookup to get the 
+associated executable.
 
    @COMMAND = FetchCommand(FILENAME.EXT [, OPTION])
 
@@ -56,39 +55,42 @@ For example:
 
    my @Cmd = FetchCommand('OneHumpOrTwo.pl');
 
-returns an array with (on my machine) 'C:\Perl\bin\perl.exe' in the first element,
-and 'OneHumpOrTwo.pl' in the second.
+returns an array with (on my machine) 'C:\Perl\bin\perl.exe' in the first 
+element, and 'OneHumpOrTwo.pl' in the second.
 
    my @Cmd = FetchCommand('test.txt');
 
 returns the items 'C:\WINDOWS\system32\NOTEPAD.EXE' and 'test.txt' in @Cmd.  
    
-In its simplest form, just the filename extension need be specified, for example:
+In its simplest form, only the filename extension need be specified, 
+for example:
 
    my @Cmd = FetchCommand('.doc');
 
-returns a three item list 'C:\Program Files\Microsoft Office\Office\WINWORD.EXE', 
+returns three items: 'C:\Program Files\Microsoft Office\Office\WINWORD.EXE', 
 the option '/n', and the extension it applies to, '.doc'.
    
 By default the 'open' option is used, but applications often offer others.
 Optionally a different option, like 'print', or 'printto', may be specified as
-a second argument.  For example, the following will use the default .txt print command 
-(typically NOTEPAD.EXE) to print the file 'classes.txt':
+a second argument.  For example, the following will use the default .txt print 
+command (typically NOTEPAD.EXE) to print the file 'classes.txt':
    
    my ($Obj, $Cmd);
    ($Exe, @Cmd) = FetchCommand('classes.txt', 'print');
    Win32::Process::Create($Obj, $Exe, "$Exe @Cmd", 
                           0, NORMAL_PRIORITY_CLASS, ".");
 
-Consult your application documentation (or peek in the registry)o find which options are supported.
+Consult your application documentation (or peek in the registry) to find which 
+options are supported.
 
-Some commands have insertion strings, like %1 and %*.  Only limited substitution is done,
-where %1 has FILENAME.EXT substituted and %* is ignored.  This covers most cases.  If the
-insertion string is embedded in another then no substitution is performed.  Other substitution
-strings, like %L used by Windows Media Player, are copied to the output list.
+Some commands have insertion strings, like %1, %l, %L, and %*.  Only limited 
+substitution is done, where %1, %l, and %L have FILENAME.EXT substituted and 
+%* is ignored.  This covers most cases.  If the insertion string is embedded 
+in another then no substitution is performed.  Other substitution strings are 
+copied to the output list.
    
-Commands without insertion strings have FILENAME.EXT pushed into the last element.  
-For example:
+Commands without insertion strings have FILENAME.EXT pushed into the last 
+element.  For example:
    
    my @Cmd = FetchCommand('cv.doc');
 
@@ -96,8 +98,8 @@ returns a three item list:
 
    C:\Program Files\Microsoft Office\Office\WINWORD.EXE, /n, cv.doc
 
-The resulting list can be used in a call to Win32::Process::Create, with the first
-element as the second argument, and the rest of the list as the third.
+The resulting list can be used in a call to Win32::Process::Create, with the 
+first element as the second argument, and the rest of the list as the third.
 For example:
 
       use Win32::Process;
@@ -111,8 +113,8 @@ For example:
 
 will run MS Word, displaying c:\cv.doc.
 
-In the event of an error, an empty list is returned, variable $^E ($EXTENDED_OS_ERROR) should be 
-checked, not $! ($OS_ERROR).
+In the event of an error, an empty list is returned, variable $^E 
+($EXTENDED_OS_ERROR) should be checked, not $! ($OS_ERROR).
 
 
 =head2 EXPORT

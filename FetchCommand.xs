@@ -7,6 +7,41 @@
 #include "XSUB.h"
 #include "ppport.h"
 
+/* ------------------------------------------------------------------ */
+
+static void ProcessError(const char *szMessage)
+{
+    char* buffer;
+    DWORD dwErr = GetLastError();
+    
+    /* DEBUG */
+    PerlIO * debug = PerlIO_open ("debug.txt", "a");
+    
+    FormatMessage( 
+                FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
+                0,
+                dwErr,
+                MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), // Default language
+                (LPTSTR) &buffer,
+                0,
+                0);
+    
+    if (dwErr != ERROR_SUCCESS) 
+       PerlIO_printf(debug, "%s: %s", szMessage, buffer);
+    else
+       PerlIO_printf(debug, "%s\n", szMessage);
+    
+    PerlIO_close (debug);
+    
+    LocalFree(buffer);
+    
+    /* APIs above would have reset it */
+    SetLastError(dwErr);
+
+}  
+
+/* ------------------------------------------------------------------ */
+
 static DWORD ext_search (const char *type, const char *szName, const char *ext, char *szExecutable)
 {
    /* Would be nicer to use the Shell API FindExecutable,
@@ -68,6 +103,9 @@ FetchCommand(szName, ...)
       int i;
       const char *ext = strrchr(szName, '.');
 
+      /* Avoid spurious errors */
+      SetLastError(ERROR_SUCCESS);
+      
       if (!ext)
          XSRETURN_EMPTY;
 
@@ -80,18 +118,17 @@ FetchCommand(szName, ...)
          type = "open";
 
       dwRetn = ext_search (type, szName, ext, szCmd);
+                                  
       if ( dwRetn != ERROR_SUCCESS)
       {
-         SetLastError(dwRetn);    /* Registry APIs don't do this */
-                                  /* Ensure $^E is updated       */
+         /* Ensure $^E is updated  (Registry APIs don't do this) */
+         SetLastError(dwRetn);
          XSRETURN_EMPTY;          /* Return nothing */
       }
-
+      
       /* Loose the arguments on the stack */
       for ( i = 0; i < items; i++)
          POPs;  
-
-      /* fprintf (stderr, "\nFor extension %s found <%s>\n", ext, szCmd); */
          
       /* I would prefer to use strtok, BUT...                     */
       /* Some commands are quoted (Imbedded spaces in file names) */
@@ -155,7 +192,6 @@ FetchCommand(szName, ...)
                   strcat (szWk, bstr);
                   XPUSHs(sv_2mortal(newSVpvn (szWk, strlen(szWk))));
   
-                  /* XPUSHs(sv_2mortal(newSVpvn (szName, strlen(szName)))); */
                   bNameInserted = TRUE;
                }
                else if ( *bstr == '*' )
@@ -171,15 +207,23 @@ FetchCommand(szName, ...)
             else
             {
                /* Environment variable? */
+               /* Error checking improved: 0.03 */
                
                char szWk[FILENAME_MAX+1] = {0};
                char szFullPath[FILENAME_MAX+1] = {0};
-
+               DWORD dwRetn;
+               
                strncpy (szWk, astr, iLen);
 
-               ExpandEnvironmentStrings(szWk, szFullPath, FILENAME_MAX+1);
-
-               XPUSHs(sv_2mortal(newSVpvn (szFullPath, strlen(szFullPath))));
+               dwRetn = ExpandEnvironmentStrings(szWk, szFullPath, FILENAME_MAX+1);
+               /* ProcessError(szWk); */
+         
+               if ( dwRetn ) {
+                  XPUSHs(sv_2mortal(newSVpvn (szFullPath, strlen(szFullPath))));
+               }
+               else if (GetLastError() == ERROR_ENVVAR_NOT_FOUND) {
+                  XPUSHs(sv_2mortal(newSVpvn (szWk, strlen(szWk))));
+               }
             }
          }
          else

@@ -24,16 +24,16 @@ is($Cmd[0], $Config{'perlpath'},'ext .pl perl path check');
 is($Cmd[1], 'config.pl');
 
 @Cmd = FetchCommand ('perl');
-ok(!$^E, 'os ext.error ok(b)');
-ok(@Cmd == 0, 'check number of elements(b)');
+is(0+$^E, 0, 'os error ok(perl)') or diag ("$^E: \@Cmd is: @Cmd\n");
+ok(@Cmd == 0, 'check number of elements(perl)');
 
 @Cmd = FetchCommand ('test.txt');
-ok(!$^E, 'os ext.error ok(c)');
+is(0+$^E, 0, 'os error ok(test.txt)') or diag ("$^E: \@Cmd is: @Cmd\n");
 
 # Invalid extension 
 @Cmd = FetchCommand ('somefile.xdottyx');
-ok($^E, 'os ext.error ok(d)');
-ok(@Cmd == 0, 'check number of elements(d)');
+ok($^E, 'os ext.error ok(somefile.xdottyx)');
+ok(@Cmd == 0, 'check number of elements(somefile.xdottyx)');
 
 # Empty extension 
 @Cmd = FetchCommand ('fred.');

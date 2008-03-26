@@ -7,5 +7,8 @@ Revision history for Perl extension Win32::FetchCommand.
 	- documentation corrections
 	- Makefile.PL prevent execution on non-Windows
 	- Improvements to insertion string handling
+0.03  Wed Mar 26 14:02:00 2008
+	- Changed error message for unsupported OS for CPAN testers
+	- Improved error handling
 
 

@@ -10,7 +10,7 @@ use AutoLoader qw(AUTOLOAD);
 our @ISA = qw(Exporter);
 our @EXPORT = qw( FetchCommand );
 
-our $VERSION = '0.02';
+our $VERSION = '0.03';
 
 require XSLoader;
 XSLoader::load('Win32::FetchCommand', $VERSION);
@@ -20,7 +20,6 @@ XSLoader::load('Win32::FetchCommand', $VERSION);
 1;
 __END__
 
-# Below is documentation for the module.
 
 =head1 NAME
 

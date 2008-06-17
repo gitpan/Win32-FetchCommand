@@ -10,5 +10,7 @@ Revision history for Perl extension Win32::FetchCommand.
 0.03  Wed Mar 26 14:02:00 2008
 	- Changed error message for unsupported OS for CPAN testers
 	- Improved error handling
+0.04  Mon May 12 12:20:00 2008
+	- Changed tests to run with Strawberry Perl
 
 

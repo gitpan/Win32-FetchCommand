@@ -19,9 +19,10 @@ $^E = 0;
 my @Cmd = FetchCommand ('config.pl');
 ok(!$^E, 'os ext.error ok');
 
-ok(@Cmd == 2, 'check number of elements(a)');
+# Tests changed for v.0.04 (Strawberry Perl)
+ok(@Cmd == 2 || (@Cmd == 3 && $Cmd[1] eq '-f'), 'check number of elements(a)');
 is($Cmd[0], $Config{'perlpath'},'ext .pl perl path check');
-is($Cmd[1], 'config.pl');
+is($Cmd[-1], 'config.pl') or diag ("\@Cmd: <@Cmd>");
 
 @Cmd = FetchCommand ('perl');
 is(0+$^E, 0, 'os error ok(perl)') or diag ("$^E: \@Cmd is: @Cmd\n");

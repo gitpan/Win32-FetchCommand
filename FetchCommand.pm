@@ -10,7 +10,7 @@ use AutoLoader qw(AUTOLOAD);
 our @ISA = qw(Exporter);
 our @EXPORT = qw( FetchCommand );
 
-our $VERSION = '0.03';
+our $VERSION = '0.04';
 
 require XSLoader;
 XSLoader::load('Win32::FetchCommand', $VERSION);
@@ -130,7 +130,7 @@ Clive Darke, E<lt>clive.darke@talk21.comE<gt>
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright (C) 2004 by Clive Darke
+Copyright (C) 2004, 2008 by Clive Darke
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself, either Perl version 5.8.0 or,

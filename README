@@ -1,4 +1,4 @@
-Win32/FetchCommand version 0.02
+Win32/FetchCommand version 0.04
 ===============================
 
 NAME
@@ -100,10 +100,13 @@ INSTALLATION
 To install this module type the following:
 
    perl Makefile.PL
-   make
-   make test
-   make install
+   nmake all
+   nmake test
+   nmake install
 
+   If using the GNU toolset (for example with Strawberry Perl), 
+   use dmake instead of nmake.
+   
 DEPENDENCIES
 
 This module will only run on Microsoft Windows, and requires a C compiler, a
